@@ -1,0 +1,3 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+export async function GET() { const [total, today, batches, byIndustry, byCity, latest] = await Promise.all([prisma.lead.count(), prisma.lead.count({ where: { createdAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) } } }), prisma.dailyBatch.findMany({ orderBy: { createdAt: "desc" }, take: 10 }), prisma.lead.groupBy({ by: ["industry"], _count: true }), prisma.lead.groupBy({ by: ["city"], _count: true }), prisma.lead.findMany({ orderBy: { createdAt: "desc" }, take: 8 })]); return NextResponse.json({ total, today, batches, byIndustry, byCity, latest }); }

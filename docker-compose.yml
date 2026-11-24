@@ -1,0 +1,34 @@
+services:
+  daily-lead-intelligence:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: file:/app/data/leads.db
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      APP_TIMEZONE: Asia/Jakarta
+      AUTH_SECRET: ${AUTH_SECRET:-}
+      AI_BASE_URL: ${AI_BASE_URL:-https://api.hemattoken.id/v1}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      MARKETING_EMAILS: ${MARKETING_EMAILS:-}
+      CRON_SECRET: ${CRON_SECRET:-}
+    volumes:
+      - lead-data:/app/data
+    expose:
+      - "3000"
+    networks:
+      - dokploy-network
+volumes:
+  lead-data:
+networks:
+  dokploy-network:
+    external: true

@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model DailyBatch {
+  id             String   @id @default(cuid())
+  runDate        String   @unique
+  status         String   @default("pending")
+  targetCount    Int      @default(10)
+  generatedCount Int      @default(0)
+  startedAt      DateTime?
+  completedAt    DateTime?
+  errorMessage   String?
+  createdAt      DateTime @default(now())
+  leads          Lead[]
+  deliveries     EmailDelivery[]
+}
+
+model Lead {
+  id                  String   @id @default(cuid())
+  companyName         String
+  normalizedKey       String   @unique
+  industry            String
+  businessDescription String?
+  website             String?
+  email               String?
+  phone               String?
+  address             String
+  city                String
+  province            String?
+  postalCode          String?
+  targetDepartments   String
+  logisticsPotential  String?
+  suggestedService    String?
+  qualificationReason String?
+  confidenceLevel     String?
+  leadScore           Int      @default(0)
+  leadCategory        String   @default("medium")
+  sourceName          String
+  sourceUrl           String
+  verifiedAt          DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  batchId             String?
+  batch               DailyBatch? @relation(fields: [batchId], references: [id])
+  activities          LeadActivity[]
+  @@index([industry])
+  @@index([city])
+  @@index([leadScore])
+  @@index([createdAt])
+}
+
+model EmailDelivery {
+  id           String   @id @default(cuid())
+  batchId      String
+  recipient    String
+  subject      String
+  status       String   @default("pending")
+  errorMessage String?
+  sentAt       DateTime?
+  createdAt    DateTime @default(now())
+  batch        DailyBatch @relation(fields: [batchId], references: [id])
+  @@unique([batchId, recipient])
+  @@index([status])
+}
+
+model LeadActivity {
+  id           String   @id @default(cuid())
+  leadId       String
+  activityType String
+  notes        String?
+  createdAt    DateTime @default(now())
+  lead         Lead @relation(fields: [leadId], references: [id])
+  @@index([leadId])
+}

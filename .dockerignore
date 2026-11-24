@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.env
+.env.*
+!.env.example
+*.db
+*.db-journal
+npm-debug.log*
+Dockerfile*
+compose*.yml
+coverage

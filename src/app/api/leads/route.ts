@@ -1,0 +1,3 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+export async function GET(req: NextRequest) { const u = new URL(req.url); const limit = Math.min(100, Math.max(1, Number(u.searchParams.get("limit") || 20))); const leads = await prisma.lead.findMany({ where: { ...(u.searchParams.get("industry") ? { industry: u.searchParams.get("industry")! } : {}), ...(u.searchParams.get("city") ? { city: u.searchParams.get("city")! } : {}), ...(u.searchParams.get("category") ? { leadCategory: u.searchParams.get("category")! } : {}), ...(u.searchParams.get("q") ? { companyName: { contains: u.searchParams.get("q")! } } : {}) }, orderBy: { createdAt: "desc" }, take: limit }); return NextResponse.json({ leads }); }
